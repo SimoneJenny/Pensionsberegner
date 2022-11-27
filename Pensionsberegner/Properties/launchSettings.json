@@ -1,0 +1,324 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:59788",
+      "sslPort": 44345
+    }
+  },
+  "profiles": {
+    "Pensionsberegner": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7272;http://localhost:5272",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "openapi": "3.0.1",
+      "info": {
+        "title": "MinitoolsAPI",
+        "description": "API udviklet af Pensionpartner. Enkel adgang til fagligt komplekse beregningsmuligheder i Pensionpartners beregningsmotor.",
+        "contact": {
+          "name": "Pensionpartner ApS",
+          "url": "https://www.pensionpartner.dk",
+          "email": "support@pensionpartner.dk"
+        },
+        "version": "v1"
+      },
+      "paths": {
+        "/api/License": {
+          "put": {
+            "tags": [
+              "License"
+            ],
+            "parameters": [
+              {
+                "name": "licenseKey",
+                "in": "query",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Success",
+                "content": {
+                  "text/plain": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultDto"
+                    }
+                  },
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultDto"
+                    }
+                  },
+                  "text/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/PublicPension": {
+          "put": {
+            "tags": [
+              "PublicPension"
+            ],
+            "summary": "Beregner udbetaling af folkepension før og efter skat",
+            "requestBody": {
+              "description": "RequestPublicPensionDto - indeholder oplysninger om civilstand, løn, pensionsindkomst, kapitalindkomst og fri formue",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RequestPublicPensionDto"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RequestPublicPensionDto"
+                  }
+                },
+                "application/*+json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RequestPublicPensionDto"
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Success",
+                "content": {
+                  "text/plain": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultPublicPension"
+                    }
+                  },
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultPublicPension"
+                    }
+                  },
+                  "text/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ResultPublicPension"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "eCivilstatus": {
+            "enum": [
+              "Unknown",
+              "Married",
+              "CivilPartner",
+              "Single",
+              "CalculateWithoutSpouse"
+            ],
+            "type": "string"
+          },
+          "IncludePersonDto": {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "boolean"
+              },
+              "spouse": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "PublicPensionDataDto": {
+            "type": "object",
+            "properties": {
+              "person": {
+                "$ref": "#/components/schemas/IncludePersonDto"
+              },
+              "customer": {
+                "$ref": "#/components/schemas/PublicPensionPersonDto"
+              },
+              "spouse": {
+                "$ref": "#/components/schemas/PublicPensionPersonDto"
+              },
+              "maritalStatus": {
+                "$ref": "#/components/schemas/eCivilstatus"
+              },
+              "spouseIsSeniorCitizen": {
+                "type": "boolean"
+              },
+              "calculationDate": {
+                "type": "string",
+                "nullable": true
+              },
+              "includePublicPensionExtraSupplement": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "PublicPensionDownpaymentDto": {
+            "type": "object",
+            "properties": {
+              "publicPensionBase": {
+                "type": "number",
+                "format": "double"
+              },
+              "publicPensionSupplement": {
+                "type": "number",
+                "format": "double"
+              },
+              "publicPensionExtraSupplement": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageTax": {
+                "type": "number",
+                "format": "double"
+              }
+            },
+            "additionalProperties": false
+          },
+          "PublicPensionPersonDto": {
+            "type": "object",
+            "properties": {
+              "danishSSN": {
+                "type": "string",
+                "nullable": true
+              },
+              "pensionDate": {
+                "type": "string",
+                "nullable": true
+              },
+              "salary": {
+                "type": "number",
+                "format": "double"
+              },
+              "coronaSalary": {
+                "type": "number",
+                "format": "double"
+              },
+              "activeVSOIncome": {
+                "type": "number",
+                "format": "double"
+              },
+              "inactiveVSOIncome": {
+                "type": "number",
+                "format": "double"
+              },
+              "pensionIncome": {
+                "type": "number",
+                "format": "double"
+              },
+              "pensionSaving": {
+                "type": "number",
+                "format": "double"
+              },
+              "capitalIncome": {
+                "type": "number",
+                "format": "double"
+              },
+              "liquidity": {
+                "type": "number",
+                "format": "double"
+              },
+              "nationalChurchMember": {
+                "type": "boolean"
+              },
+              "yearsAbroad": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "additionalProperties": false
+          },
+          "PublicPensionResultDto": {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "$ref": "#/components/schemas/PublicPensionDownpaymentDto"
+              },
+              "spouse": {
+                "$ref": "#/components/schemas/PublicPensionDownpaymentDto"
+              }
+            },
+            "additionalProperties": false
+          },
+          "RequestPublicPensionDto": {
+            "type": "object",
+            "properties": {
+              "licenseKey": {
+                "type": "string",
+                "nullable": true
+              },
+              "data": {
+                "$ref": "#/components/schemas/PublicPensionDataDto"
+              }
+            },
+            "additionalProperties": false
+          },
+          "ResultDto": {
+            "type": "object",
+            "properties": {
+              "log": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "nullable": true
+              },
+              "userdataAsString": {
+                "type": "string",
+                "nullable": true
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "error": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "ResultPublicPension": {
+            "type": "object",
+            "properties": {
+              "base": {
+                "$ref": "#/components/schemas/ResultDto"
+              },
+              "publicPension": {
+                "$ref": "#/components/schemas/PublicPensionResultDto"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}
